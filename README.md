@@ -27,17 +27,17 @@ alembic upgrade head
 - GET /api/v1/health
 
 ### Flights Analytics
-- GET /api/v1/flights/top-airport
-- GET /api/v1/flights/top-airline
-- GET /api/v1/flights/top-day
-- GET /api/v1/flights/airlines-over-two
+- GET /api/v1/flights/analytics/top-airport
+- GET /api/v1/flights/analytics/top-airline
+- GET /api/v1/flights/analytics/top-day
+- GET /api/v1/flights/analytics/airlines-over-two
 
 ### Stack Analytics
-- GET /api/v1/stack/stats
-- GET /api/v1/stack/highest-reputation
-- GET /api/v1/stack/lowest-views
-- GET /api/v1/stack/oldest
-- GET /api/v1/stack/newest
+- GET /api/v1/stack/analytics/stats
+- GET /api/v1/stack/analytics/highest-reputation
+- GET /api/v1/stack/analytics/lowest-views
+- GET /api/v1/stack/analytics/oldest
+- GET /api/v1/stack/analytics/newest
 
 ---
 
