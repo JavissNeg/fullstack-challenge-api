@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV PYTHONPATH=/app
 
-RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y postgresql-client openssl && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
@@ -12,6 +12,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 8000
+# Crear directorio para certificados
+RUN mkdir -p /app/certs
 
-CMD ["/bin/sh", "-c", "alembic upgrade head && python -m src.modules.flights.seed && uvicorn src.main:app --host 0.0.0.0 --port 8000"]
+# Generar certificados auto-firmados en el contenedor
+RUN openssl req -x509 -newkey rsa:4096 -nodes \
+    -out /app/certs/cert.pem \
+    -keyout /app/certs/key.pem \
+    -days 365 \
+    -subj "/C=MX/ST=Mexico/L=Mexico/O=Mecate/OU=IT/CN=localhost"
+
+# Establecer permisos correctos para los certificados
+RUN chmod 644 /app/certs/cert.pem && chmod 600 /app/certs/key.pem
+
+EXPOSE 8000 8443
+
+CMD ["/bin/sh", "-c", "alembic upgrade head && python -m src.modules.flights.seed && uvicorn src.main:app --host 0.0.0.0 --port 8443 --ssl-keyfile=/app/certs/key.pem --ssl-certfile=/app/certs/cert.pem"]
