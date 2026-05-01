@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     database_url: str
     database_echo: bool = False
 
+    # Configuración SSL/HTTPS
+    use_ssl: bool = False
+    ssl_keyfile: str = "certs/key.pem"
+    ssl_certfile: str = "certs/cert.pem"
+    server_port: int = 8000
+
     class Config:
         env_file = ".env"
         case_sensitive = False
