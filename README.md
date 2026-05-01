@@ -7,7 +7,6 @@ FastAPI service for flight data management with analytics modules.
 
 ## 🚀 Base URLs
 - https://localhost:8443
-- http://localhost:8000
 
 ---
 
