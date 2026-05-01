@@ -1,39 +1,33 @@
-from sqlalchemy.orm import Session
-from src.modules.flights.analytics.repository import (
+from src.core.logging import get_logger
+from .repository import (
     top_airport,
     top_airline,
     top_day,
-    airlines_over_two_flights_per_day
+    airlines_over_two_flights_per_day,
 )
 
-def get_top_airport(db: Session):
+logger = get_logger(__name__)
+
+
+def get_top_airport(db):
     result = top_airport(db)
-    return {
-        "airport": result[0],
-        "total_movement": result[1]
-    } if result else None
+    logger.info("Top airport computed")
+    return result
 
-def get_top_airline(db: Session):
+
+def get_top_airline(db):
     result = top_airline(db)
-    return {
-        "airline": result[0],
-        "total_flights": result[1]
-    } if result else None
+    logger.info("Top airline computed")
+    return result
 
-def get_top_day(db: Session):
+
+def get_top_day(db):
     result = top_day(db)
-    return {
-        "date": str(result[0]),
-        "total_flights": result[1]
-    } if result else None
+    logger.info("Top day computed")
+    return result
 
-def get_airlines_over_two(db: Session):
-    results = airlines_over_two_flights_per_day(db)
-    return [
-        {
-            "airline": r[0],
-            "date": str(r[1]),
-            "flights": r[2]
-        }
-        for r in results
-    ]
+
+def get_airlines_over_two(db):
+    result = airlines_over_two_flights_per_day(db)
+    logger.info("Airlines over 2 flights computed")
+    return result
