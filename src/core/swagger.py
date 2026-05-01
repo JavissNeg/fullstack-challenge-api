@@ -45,14 +45,6 @@ def custom_openapi(app):
                 "name": "health",
                 "description": "Endpoints de verificación de estado del servicio"
             },
-            {
-                "name": "flights-analytics",
-                "description": "Análisis de datos de vuelos desde base de datos PostgreSQL"
-            },
-            {
-                "name": "stack-analytics",
-                "description": "Análisis y métricas de la API de Stack Exchange"
-            }
         ],
     )
 
