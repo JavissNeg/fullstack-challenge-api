@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from src.core.config import settings
 from src.core.logging import get_logger
+from src.core.handlers import app_exception_handler
+from src.core.exceptions import AppException
 from src.core.router_registry import register_routers
 from src.core.swagger import configure_swagger_app
 import os
@@ -13,6 +15,9 @@ app = FastAPI(
     description=settings.app_description,
     debug=settings.debug,
 )
+
+# Register global exception handlers
+app.add_exception_handler(AppException, app_exception_handler)
 
 # Configure Swagger/OpenAPI
 configure_swagger_app(app)
