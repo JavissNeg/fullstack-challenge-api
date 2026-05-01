@@ -25,15 +25,23 @@ MOVIMIENTOS_DATA = [
 ]
 
 VUELOS_DATA = [
+    # Aerolínea 1 
     {"id_aerolinea": 1, "id_aeropuerto": 1, "id_movimiento": 1, "dia": date(2021, 5, 2)},
+    {"id_aerolinea": 1, "id_aeropuerto": 2, "id_movimiento": 1, "dia": date(2021, 5, 2)},
+    {"id_aerolinea": 1, "id_aeropuerto": 3, "id_movimiento": 1, "dia": date(2021, 5, 2)},
+
+    # Aerolínea 2
     {"id_aerolinea": 2, "id_aeropuerto": 1, "id_movimiento": 1, "dia": date(2021, 5, 2)},
+    {"id_aerolinea": 2, "id_aeropuerto": 3, "id_movimiento": 1, "dia": date(2021, 5, 2)},
+
+    # Aerolínea 3 
     {"id_aerolinea": 3, "id_aeropuerto": 2, "id_movimiento": 2, "dia": date(2021, 5, 2)},
+    {"id_aerolinea": 3, "id_aeropuerto": 4, "id_movimiento": 1, "dia": date(2021, 5, 4)},
+    {"id_aerolinea": 3, "id_aeropuerto": 4, "id_movimiento": 1, "dia": date(2021, 5, 4)},
+
+    # Aerolínea 4 
     {"id_aerolinea": 4, "id_aeropuerto": 3, "id_movimiento": 2, "dia": date(2021, 5, 2)},
-    {"id_aerolinea": 1, "id_aeropuerto": 3, "id_movimiento": 2, "dia": date(2021, 5, 2)},
-    {"id_aerolinea": 2, "id_aeropuerto": 1, "id_movimiento": 1, "dia": date(2021, 5, 2)},
-    {"id_aerolinea": 2, "id_aeropuerto": 3, "id_movimiento": 1, "dia": date(2021, 5, 4)},
-    {"id_aerolinea": 3, "id_aeropuerto": 4, "id_movimiento": 1, "dia": date(2021, 5, 4)},
-    {"id_aerolinea": 3, "id_aeropuerto": 4, "id_movimiento": 1, "dia": date(2021, 5, 4)},
+    {"id_aerolinea": 4, "id_aeropuerto": 3, "id_movimiento": 2, "dia": date(2021, 5, 2)},
 ]
 
 if __name__ == "__main__":
