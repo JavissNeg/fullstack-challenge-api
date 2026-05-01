@@ -1,94 +1,106 @@
 from fastapi import APIRouter, Query
+
 from .schemas import StackStats, HighestReputation, LowestViews, QuestionAge
-from src.modules.stack.analytics.repository import fetch_stack_data
+
 from src.modules.stack.analytics.service import (
+    get_items,
     get_analytics_stats,
     get_analytics_highest_reputation,
     get_analytics_lowest_views,
     get_analytics_oldest,
-    get_analytics_newest
+    get_analytics_newest,
+)
+    
+router = APIRouter(
+    tags=["Stack Analytics"]
 )
 
-router = APIRouter()
+def common_query():
+    return Query("perl", description="Término de búsqueda en títulos")
 
-async def _get_items(
-    query: str = Query("perl", description="Término de búsqueda en títulos de preguntas"),
-    order: str = Query("desc", description="Orden de clasificación: asc o desc"),
-    sort: str = Query("activity", description="Criterio de ordenación: activity, votes, creation")
-):
-    return await fetch_stack_data(query=query, order=order, sort=sort)
+
+def common_order():
+    return Query("desc", description="Orden: asc o desc")
+
+
+def common_sort():
+    return Query("activity", description="Sort: activity, votes, creation")
+
+
+async def _fetch(query: str, order: str, sort: str):
+    return await get_items(query, order, sort)
+
 
 @router.get(
     "/stats",
     response_model=StackStats,
-    summary="Estadísticas de preguntas de Stack Exchange",
-    description="Obtiene estadísticas resumidas de preguntas encontradas en la búsqueda.",
-    response_description="Estadísticas de preguntas"
+    summary="Estadísticas generales",
+    responses={404: {"description": "No se encontraron resultados"}},
 )
 async def analytics_stats(
-    query: str = Query("perl", description="Término de búsqueda en títulos de preguntas"),
-    order: str = Query("desc", description="Orden de clasificación: asc o desc"),
-    sort: str = Query("activity", description="Criterio de ordenación: activity, votes, creation")
+    query: str = common_query(),
+    order: str = common_order(),
+    sort: str = common_sort(),
 ):
-    items = await _get_items(query=query, order=order, sort=sort)
+    items = await _fetch(query, order, sort)
     return get_analytics_stats(items)
+
 
 @router.get(
     "/highest-reputation",
     response_model=HighestReputation,
     summary="Usuario con mayor reputación",
-    description="Encuentra el usuario con mayor reputación entre los propietarios de preguntas.",
-    response_description="Usuario con mayor reputación"
+    responses={404: {"description": "No se encontraron resultados"}},
 )
 async def analytics_highest_reputation(
-    query: str = Query("perl", description="Término de búsqueda en títulos de preguntas"),
-    order: str = Query("desc", description="Orden de clasificación: asc o desc"),
-    sort: str = Query("activity", description="Criterio de ordenación: activity, votes, creation")
+    query: str = common_query(),
+    order: str = common_order(),
+    sort: str = common_sort(),
 ):
-    items = await _get_items(query=query, order=order, sort=sort)
+    items = await _fetch(query, order, sort)
     return get_analytics_highest_reputation(items)
+
 
 @router.get(
     "/lowest-views",
     response_model=LowestViews,
     summary="Pregunta con menos vistas",
-    description="Encuentra la pregunta con menor número de vistas.",
-    response_description="Pregunta menos vista"
+    responses={404: {"description": "No se encontraron resultados"}},
 )
 async def analytics_lowest_views(
-    query: str = Query("perl", description="Término de búsqueda en títulos de preguntas"),
-    order: str = Query("desc", description="Orden de clasificación: asc o desc"),
-    sort: str = Query("activity", description="Criterio de ordenación: activity, votes, creation")
+    query: str = common_query(),
+    order: str = common_order(),
+    sort: str = common_sort(),
 ):
-    items = await _get_items(query=query, order=order, sort=sort)
+    items = await _fetch(query, order, sort)
     return get_analytics_lowest_views(items)
+
 
 @router.get(
     "/oldest",
     response_model=QuestionAge,
     summary="Pregunta más antigua",
-    description="Encuentra la pregunta más antigua por fecha de creación.",
-    response_description="Pregunta más antigua"
+    responses={404: {"description": "No se encontraron resultados"}},
 )
 async def analytics_oldest(
-    query: str = Query("perl", description="Término de búsqueda en títulos de preguntas"),
-    order: str = Query("desc", description="Orden de clasificación: asc o desc"),
-    sort: str = Query("activity", description="Criterio de ordenación: activity, votes, creation")
+    query: str = common_query(),
+    order: str = common_order(),
+    sort: str = common_sort(),
 ):
-    items = await _get_items(query=query, order=order, sort=sort)
+    items = await _fetch(query, order, sort)
     return get_analytics_oldest(items)
+
 
 @router.get(
     "/newest",
     response_model=QuestionAge,
     summary="Pregunta más reciente",
-    description="Encuentra la pregunta más recientemente creada.",
-    response_description="Pregunta más reciente"
+    responses={404: {"description": "No se encontraron resultados"}},
 )
 async def analytics_newest(
-    query: str = Query("perl", description="Término de búsqueda en títulos de preguntas"),
-    order: str = Query("desc", description="Orden de clasificación: asc o desc"),
-    sort: str = Query("activity", description="Criterio de ordenación: activity, votes, creation")
+    query: str = common_query(),
+    order: str = common_order(),
+    sort: str = common_sort(),
 ):
-    items = await _get_items(query=query, order=order, sort=sort)
+    items = await _fetch(query, order, sort)
     return get_analytics_newest(items)

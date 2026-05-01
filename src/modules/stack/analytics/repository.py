@@ -5,14 +5,19 @@ logger = get_logger(__name__)
 
 STACK_API_URL = "https://api.stackexchange.com/2.2/search/advanced"
 
-async def fetch_stack_data(query: str = "perl", pagesize: int = 50, order: str = "desc", sort: str = "activity"):
+
+async def fetch_stack_data(
+    query: str = "perl",
+    pagesize: int = 50,
+    order: str = "desc",
+    sort: str = "activity"
+):
     params = {
         "order": order,
         "sort": sort,
         "intitle": query,
         "site": "stackoverflow",
         "pagesize": pagesize,
-        "filter": "withbody"
     }
 
     try:
@@ -20,6 +25,6 @@ async def fetch_stack_data(query: str = "perl", pagesize: int = 50, order: str =
             response = await client.get(STACK_API_URL, params=params)
             response.raise_for_status()
             return response.json().get("items", [])
-    except Exception as e:
-        logger.error(f"Error fetching Stack data: {e}")
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error fetching Stack data: {e}")
         return []
