@@ -11,8 +11,9 @@ FastAPI service for flight data management with analytics modules.
 ---
 
 ## ⚙️ Setup
-
+```bash
 docker-compose up --build
+```
 
 ---
 
@@ -30,8 +31,20 @@ uvicorn src.main:app --host 0.0.0.0 --port 8443
 
 ---
 
+## 🧪 Unit tests
+
+Run all unit tests with pytest:
+
+```bash
+pytest -v
+```
+
+---
+
 ## 🗄️ Migrations
+```bash
 alembic upgrade head
+```
 
 ---
 
