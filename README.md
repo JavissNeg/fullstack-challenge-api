@@ -16,6 +16,20 @@ docker-compose up --build
 
 ---
 
+## 🧪 Manual run HTTP
+
+You can also run the project manually without full docker-compose:
+
+```bash
+docker compose up postgres -d
+alembic upgrade head
+python -m src.modules.flights.seed
+
+uvicorn src.main:app --host 0.0.0.0 --port 8443
+```
+
+---
+
 ## 🗄️ Migrations
 alembic upgrade head
 
