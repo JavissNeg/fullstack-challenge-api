@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     debug: bool = True
     log_level: str = "INFO"
     
+    database_url: str = "postgresql://user:password@localhost:5432/flights_db"
+    database_echo: bool = False
+    
     class Config:
         env_file = ".env"
         case_sensitive = False
