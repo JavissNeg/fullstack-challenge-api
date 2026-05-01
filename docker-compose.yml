@@ -29,6 +29,11 @@ services:
     environment:
       DATABASE_URL: postgresql://user:password@postgres:5432/flights_db
       DEBUG: "True"
+
+      CORS_ORIGINS: "http://localhost:4200,https://localhost:4200"
+      CORS_CREDENTIALS: "True"
+      CORS_METHODS: "GET,POST,PUT,DELETE,OPTIONS"
+      CORS_HEADERS: "*"
     volumes:
       - .:/src
 

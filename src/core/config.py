@@ -28,6 +28,13 @@ class Settings(BaseSettings):
     # Configuración de Base de Datos
     database_url: str
     database_echo: bool = False
+    
+    # Configuración de CORS
+    cors_origins: str = "http://localhost:4200,https://localhost:4200"
+    cors_credentials: bool = True
+    cors_methods: str = "*"
+    cors_headers: str = "*"
+
 
     # Configuración SSL/HTTPS
     use_ssl: bool = False

@@ -4,6 +4,7 @@ from src.core.logging import get_logger
 from src.core.handlers import app_exception_handler
 from src.core.exceptions import AppException
 from src.core.router_registry import register_routers
+from src.core.cors import configure_cors
 from src.core.swagger import configure_swagger_app
 import os
 
@@ -18,6 +19,9 @@ app = FastAPI(
 
 # Register global exception handlers
 app.add_exception_handler(AppException, app_exception_handler)
+
+# Configure CORS
+configure_cors(app)
 
 # Configure Swagger/OpenAPI
 configure_swagger_app(app)
