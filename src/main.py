@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from src.core.config import settings
 from src.core.logging import get_logger
 from src.core.router_registry import register_routers
+from src.core.swagger import configure_swagger_app
 
 logger = get_logger(__name__)
 
@@ -11,6 +12,9 @@ app = FastAPI(
     description=settings.app_description,
     debug=settings.debug,
 )
+
+# Configure Swagger/OpenAPI
+configure_swagger_app(app)
 
 app.api_version = settings.api_version
 register_routers(app)
