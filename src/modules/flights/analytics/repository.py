@@ -1,83 +1,112 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, desc
+from typing import Dict, List
+
 from src.modules.flights.models import Aeropuerto, Aerolinea, Vuelo
 from .exceptions import NoFlightDataFoundError
 
 
-def top_airport(db: Session):
-    result = db.query(
-        Aeropuerto.nombre_aeropuerto,
-        func.count(Vuelo.id_vuelo).label("total_movement")
-    ).join(Vuelo).group_by(Aeropuerto.id_aeropuerto).order_by(
-        func.count(Vuelo.id_vuelo).desc()
-    ).first()
-
+def _get_single_result(query, error_msg: str):
+    result = query.first()
     if not result:
-        raise NoFlightDataFoundError("No airport data found")
-
+        raise NoFlightDataFoundError(error_msg)
     return result
 
 
-def top_airline(db: Session):
-    result = db.query(
-        Aerolinea.nombre_aerolinea,
-        func.count(Vuelo.id_vuelo).label("total_flights")
-    ).join(Vuelo).group_by(Aerolinea.id_aerolinea).order_by(
-        func.count(Vuelo.id_vuelo).desc()
-    ).first()
+def top_airport(db: Session) -> Dict:
+    total = func.count(Vuelo.id_vuelo).label("total_movement")
 
-    if not result:
-        raise NoFlightDataFoundError("No airline data found")
+    query = (
+        db.query(
+            Aeropuerto.nombre_aeropuerto.label("airport"),
+            total
+        )
+        .join(Vuelo, Vuelo.id_aeropuerto == Aeropuerto.id_aeropuerto)
+        .group_by(Aeropuerto.id_aeropuerto)
+        .order_by(desc(total))
+    )
 
-    return result
-
-
-def top_day(db: Session):
-    result = db.query(
-        func.to_char(Vuelo.dia, 'Day').label("day"),
-        func.count(Vuelo.id_vuelo).label("total_flights")
-    ).group_by(
-        func.to_char(Vuelo.dia, 'Day')
-    ).order_by(
-        func.count(Vuelo.id_vuelo).desc()
-    ).first()
-
-    if not result:
-        raise NoFlightDataFoundError("No flight day data found")
+    result = _get_single_result(query, "No airport data found")
 
     return {
-        "day": result.day.strip(),
+        "airport": result.airport,
+        "total_movement": result.total_movement
+    }
+
+
+def top_airline(db: Session) -> Dict:
+    total = func.count(Vuelo.id_vuelo).label("total_flights")
+
+    query = (
+        db.query(
+            Aerolinea.nombre_aerolinea.label("airline"),
+            total
+        )
+        .join(Vuelo, Vuelo.id_aerolinea == Aerolinea.id_aerolinea)
+        .group_by(Aerolinea.id_aerolinea)
+        .order_by(desc(total))
+    )
+
+    result = _get_single_result(query, "No airline data found")
+
+    return {
+        "airline": result.airline,
         "total_flights": result.total_flights
     }
 
 
-def airlines_over_two_flights_per_day(db: Session):
-    result = db.query(
-        Aerolinea.nombre_aerolinea.label("airline"),
-        Vuelo.dia.label("day"),
-        func.count(Vuelo.id_vuelo).label("total")
-    ).join(Vuelo).group_by(
-        Aerolinea.id_aerolinea,
-        Vuelo.dia
-    ).having(
-        func.count(Vuelo.id_vuelo) > 2
-    ).all()
+def top_day(db: Session) -> Dict:
+    day_expr = func.trim(func.to_char(Vuelo.dia, 'Day')).label("day")
+    total = func.count(Vuelo.id_vuelo).label("total_flights")
 
-    if not result:
+    query = (
+        db.query(day_expr, total)
+        .group_by(day_expr)
+        .order_by(desc(total))
+    )
+
+    result = _get_single_result(query, "No flight day data found")
+
+    return {
+        "day": result.day,
+        "total_flights": result.total_flights
+    }
+
+
+def airlines_over_two_flights_per_day(db: Session) -> List[Dict]:
+    total = func.count(Vuelo.id_vuelo).label("total")
+
+    subquery = (
+        db.query(
+            Aerolinea.nombre_aerolinea.label("airline"),
+            Vuelo.dia.label("day"),
+            total
+        )
+        .join(Vuelo, Vuelo.id_aerolinea == Aerolinea.id_aerolinea)
+        .group_by(Aerolinea.id_aerolinea, Vuelo.dia)
+        .having(total > 2)
+        .subquery()
+    )
+
+    query = (
+        db.query(
+            subquery.c.airline,
+            func.count(subquery.c.day).label("days_with_over_two_flights")
+        )
+        .group_by(subquery.c.airline)
+    )
+
+    results = query.all()
+
+    if not results:
         raise NoFlightDataFoundError(
             "No airlines found with more than two flights per day"
         )
 
-    # contar días por aerolínea
-    stats = {}
-
-    for r in result:
-        stats[r.airline] = stats.get(r.airline, 0) + 1
-
     return [
         {
-            "airline": airline,
-            "days_with_over_two_flights": days
+            "airline": r.airline,
+            "days_with_over_two_flights": r.days_with_over_two_flights
         }
-        for airline, days in stats.items()
+        for r in results
     ]

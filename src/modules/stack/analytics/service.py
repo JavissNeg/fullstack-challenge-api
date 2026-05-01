@@ -1,4 +1,4 @@
-from src.modules.stack.analytics.repository import fetch_stack_data
+from src.modules.stack.analytics.repository import StackClient
 from src.modules.stack.analytics.exceptions import NoItemsFoundError
 from src.core.logging import get_logger
 
@@ -88,4 +88,9 @@ def get_analytics_newest(items):
 
 
 async def get_items(query: str, order: str, sort: str):
-    return await fetch_stack_data(query=query, order=order, sort=sort)
+    async with StackClient() as client:
+        return await client.fetch_stack_data(
+            query=query,
+            order=order,
+            sort=sort
+        )
